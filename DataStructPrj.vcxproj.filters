@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{85324d5b-f492-4e6b-a22f-0332fb106f41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\DataStructures (Member 1)">
+      <UniqueIdentifier>{c98171a5-da5d-466a-b5c6-7a3761c9fa32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\Entities (Member 2)">
+      <UniqueIdentifier>{ffdaee99-263c-4555-9701-7bba721edc77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\Events (Member 2)">
+      <UniqueIdentifier>{11ddfe25-1167-4009-a527-fd48bcb186de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\IO (Member 3)">
+      <UniqueIdentifier>{f9c955dc-2b14-418d-91f8-d9065f08164e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers\Simulation (Member 4)">
+      <UniqueIdentifier>{70cd9715-ae2f-4def-b9ba-8c0fc23e9806}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\DataStructures\LinkedList.h"><Filter>Headers\DataStructures (Member 1)</Filter></ClInclude>
+    <ClInclude Include="include\DataStructures\Queue.h"><Filter>Headers\DataStructures (Member 1)</Filter></ClInclude>
+    <ClInclude Include="include\DataStructures\PriorityQueue.h"><Filter>Headers\DataStructures (Member 1)</Filter></ClInclude>
+    <ClInclude Include="include\DataStructures\LookupTable.h"><Filter>Headers\DataStructures (Member 1)</Filter></ClInclude>
+    <ClInclude Include="include\Entities\Patient.h"><Filter>Headers\Entities (Member 2)</Filter></ClInclude>
+    <ClInclude Include="include\Entities\Doctor.h"><Filter>Headers\Entities (Member 2)</Filter></ClInclude>
+    <ClInclude Include="include\Entities\Branch.h"><Filter>Headers\Entities (Member 2)</Filter></ClInclude>
+    <ClInclude Include="include\Events\Event.h"><Filter>Headers\Events (Member 2)</Filter></ClInclude>
+    <ClInclude Include="include\Events\CheckInEvent.h"><Filter>Headers\Events (Member 2)</Filter></ClInclude>
+    <ClInclude Include="include\Events\LeaveEvent.h"><Filter>Headers\Events (Member 2)</Filter></ClInclude>
+    <ClInclude Include="include\Events\UrgentEvent.h"><Filter>Headers\Events (Member 2)</Filter></ClInclude>
+    <ClInclude Include="include\IO\FileManager.h"><Filter>Headers\IO (Member 3)</Filter></ClInclude>
+    <ClInclude Include="include\IO\Statistics.h"><Filter>Headers\IO (Member 3)</Filter></ClInclude>
+    <ClInclude Include="include\Simulation\Clinic.h"><Filter>Headers\Simulation (Member 4)</Filter></ClInclude>
+  </ItemGroup>
+</Project>
