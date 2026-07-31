@@ -1,19 +1,68 @@
 #pragma once
-// Owner: Member 1 (Data Structures)
-// Templated FIFO queue. Used for: Events queue, Waiting Emergency patients.
-// NOTE: Emergency waiting queue needs O(1) removal from the middle (LeaveEvent
-// can target any waiting patient) -> back this with a doubly linked list
-// internally, not a plain array queue.
-// TODO: implement enqueue, dequeue, remove(T value / pointer), isEmpty.
+#include <iostream>
 
 template <typename T>
 class Queue {
-public:
-    Queue() {}
-    ~Queue() {}
+private:
+    struct Node {
+        T data;
+        Node* next;
+        Node(T val) : data(val), next(nullptr) {}
+    };
 
-    // TODO: void enqueue(T value);
-    // TODO: T dequeue();
-    // TODO: void remove(T value); // O(1) given the item's node
-    // TODO: bool isEmpty() const;
+    Node* frontPtr;
+    Node* rearPtr;
+    int count;
+
+public:
+    Queue() : frontPtr(nullptr), rearPtr(nullptr), count(0) {}
+
+    ~Queue() {
+        T temp;
+        while (!isEmpty()) {
+            dequeue(temp);
+        }
+    }
+
+    bool isEmpty() const {
+        return frontPtr == nullptr;
+    }
+
+    int size() const {
+        return count;
+    }
+
+    void enqueue(const T& val) {
+        Node* newNode = new Node(val);
+        if (isEmpty()) {
+            frontPtr = rearPtr = newNode;
+        }
+        else {
+            rearPtr->next = newNode;
+            rearPtr = newNode;
+        }
+        count++;
+    }
+
+    bool dequeue(T& val) {
+        if (isEmpty()) return false;
+
+        Node* temp = frontPtr;
+        val = frontPtr->data;
+        frontPtr = frontPtr->next;
+
+        if (frontPtr == nullptr) {
+            rearPtr = nullptr;
+        }
+
+        delete temp;
+        count--;
+        return true;
+    }
+
+    bool peek(T& val) const {
+        if (isEmpty()) return false;
+        val = frontPtr->data;
+        return true;
+    }
 };

@@ -1,26 +1,123 @@
 #pragma once
-// Owner: Member 1 (Data Structures)
-// Templated max-heap based priority queue. Used for: Waiting Regular patients.
-// IMPORTANT design rules agreed by the team:
-//  1. Every element tracks its own heapIndex (kept in sync by swap()).
-//  2. swap(i, j) is the ONLY function allowed to move two elements in the
-//     underlying array. sift-up/sift-down must call swap(), never move
-//     elements directly. This guarantees heapIndex is never out of sync.
-//  3. remove(T value) uses heapIndex for O(log N) arbitrary removal
-//     (needed for LeaveEvent / UrgentEvent on a Regular patient).
-// TODO: implement enqueue (insert + sift-up), dequeue (extract-max), remove(T).
+#include <iostream>
+#include <algorithm>
 
 template <typename T>
 class PriorityQueue {
-public:
-    PriorityQueue() {}
-    ~PriorityQueue() {}
-
-    // TODO: void enqueue(T value, double priority);
-    // TODO: T dequeue();
-    // TODO: void remove(T value); // uses heapIndex stored on the element
 private:
-    // TODO: void swap(int i, int j); // the ONLY place that moves two elements
-    // TODO: void siftUp(int i);
-    // TODO: void siftDown(int i);
+    struct HeapItem {
+        T data;
+        double priority;
+    };
+
+    HeapItem* heap;
+    int capacity;
+    int count;
+
+    void resize() {
+        capacity *= 2;
+        HeapItem* newHeap = new HeapItem[capacity];
+        for (int i = 0; i < count; i++) {
+            newHeap[i] = heap[i];
+        }
+        delete[] heap;
+        heap = newHeap;
+    }
+
+    void siftUp(int index) {
+        while (index > 0) {
+            int parent = (index - 1) / 2;
+            if (heap[index].priority > heap[parent].priority) {
+                std::swap(heap[index], heap[parent]);
+                index = parent;
+            }
+            else {
+                break;
+            }
+        }
+    }
+
+    void siftDown(int index) {
+        while (2 * index + 1 < count) {
+            int leftChild = 2 * index + 1;
+            int rightChild = 2 * index + 2;
+            int maxIndex = index;
+
+            if (heap[leftChild].priority > heap[maxIndex].priority) {
+                maxIndex = leftChild;
+            }
+
+            if (rightChild < count && heap[rightChild].priority > heap[maxIndex].priority) {
+                maxIndex = rightChild;
+            }
+
+            if (maxIndex != index) {
+                std::swap(heap[index], heap[maxIndex]);
+                index = maxIndex;
+            }
+            else {
+                break;
+            }
+        }
+    }
+
+public:
+    PriorityQueue(int initialCap = 20) : capacity(initialCap), count(0) {
+        heap = new HeapItem[capacity];
+    }
+
+    ~PriorityQueue() {
+        delete[] heap;
+    }
+
+    bool isEmpty() const {
+        return count == 0;
+    }
+
+    int size() const {
+        return count;
+    }
+
+    // adding element with priority O(log N)
+    void insert(const T& val, double priority) {
+        if (count == capacity) {
+            resize();
+        }
+        heap[count] = { val, priority };
+        siftUp(count);
+        count++;
+    }
+
+    // extracting element with highest priority O(log N)
+    bool extractMax(T& val) {
+        if (isEmpty()) return false;
+
+        val = heap[0].data;
+        heap[0] = heap[count - 1];
+        count--;
+        siftDown(0);
+        return true;
+    }
+
+    // viewing element with highest priority without removing it O(1)
+    bool peekMax(T& val) const {
+        if (isEmpty()) return false;
+        val = heap[0].data;
+        return true;
+    }
+
+    // removing element at a specific index in the heap O(log N) - dedicated for     Leave Events
+    bool removeAtIndex(int index, T& val) {
+        if (index < 0 || index >= count) return false;
+
+        val = heap[index].data;
+        heap[index] = heap[count - 1];
+        count--;
+
+        if (index < count) {
+            siftUp(index);
+            siftDown(index);
+        }
+        return true;
+    }
 };

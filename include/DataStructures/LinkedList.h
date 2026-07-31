@@ -1,15 +1,127 @@
 #pragma once
-// Owner: Member 1 (Data Structures)
-// Templated doubly linked list. Used for: In-Visit patients, Done patients.
-// TODO: implement insertEnd, remove(node), traverse, etc.
+#include <iostream>
 
 template <typename T>
-class LinkedList {
+class DoublyLinkedList {
 public:
-    LinkedList() {}
-    ~LinkedList() {}
+    struct Node {
+        T data;
+        Node* next;
+        Node* prev;
+        Node(T val) : data(val), next(nullptr), prev(nullptr) {}
+    };
 
-    // TODO: insertAtEnd(T value);
-    // TODO: remove(Node* node);
-    // TODO: traverse / iterator support
+private:
+    Node* head;
+    Node* tail;
+    int count;
+
+public:
+    DoublyLinkedList() : head(nullptr), tail(nullptr), count(0) {}
+
+    ~DoublyLinkedList() {
+        clear();
+    }
+
+    bool isEmpty() const {
+        return head == nullptr;
+    }
+
+    int size() const {
+        return count;
+    }
+
+    // adding to the end O(1)
+    void insertEnd(const T& val) {
+        Node* newNode = new Node(val);
+        if (isEmpty()) {
+            head = tail = newNode;
+        }
+        else {
+            tail->next = newNode;
+            newNode->prev = tail;
+            tail = newNode;
+        }
+        count++;
+    }
+
+    // adding to the front O(1)
+    void insertFront(const T& val) {
+        Node* newNode = new Node(val);
+        if (isEmpty()) {
+            head = tail = newNode;
+        }
+        else {
+            newNode->next = head;
+            head->prev = newNode;
+            head = newNode;
+        }
+        count++;
+    }
+
+    // removing the first element O(1)
+    bool removeHead(T& val) {
+        if (isEmpty()) return false;
+
+        Node* temp = head;
+        val = head->data;
+
+        head = head->next;
+        if (head != nullptr) {
+            head->prev = nullptr;
+        }
+        else {
+			tail = nullptr; // the list is now empty
+        }
+
+        delete temp;
+        count--;
+        return true;
+    }
+
+	// deleting a specific node O(1)
+    bool removeNode(Node* nodePtr) {
+        if (nodePtr == nullptr || isEmpty()) return false;
+
+        if (nodePtr == head) {
+            T tempVal;
+            return removeHead(tempVal);
+        }
+
+        if (nodePtr == tail) {
+            Node* temp = tail;
+            tail = tail->prev;
+            if (tail != nullptr) {
+                tail->next = nullptr;
+            }
+            else {
+                head = nullptr;
+            }
+            delete temp;
+            count--;
+            return true;
+        }
+
+		// deleting a node in the middle
+        nodePtr->prev->next = nodePtr->next;
+        nodePtr->next->prev = nodePtr->prev;
+
+        delete nodePtr;
+        count--;
+        return true;
+    }
+
+    void clear() {
+        Node* current = head;
+        while (current != nullptr) {
+            Node* nextNode = current->next;
+            delete current;
+            current = nextNode;
+        }
+        head = tail = nullptr;
+        count = 0;
+    }
+
+    Node* getHead() const { return head; }
+    Node* getTail() const { return tail; }
 };
