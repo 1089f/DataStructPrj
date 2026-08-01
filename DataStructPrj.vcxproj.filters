@@ -12,6 +12,7 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Simulation\Clinic.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Events\UrgentEvent.h" />

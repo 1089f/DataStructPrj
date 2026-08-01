@@ -1,31 +1,57 @@
 #pragma once
-// Owner: Member 4 (Hassan) - Simulation Engine & Scheduler
-// The "conductor": owns branches, the events queue, waiting/in-visit/done
-// structures, and the main time-step loop. Drives everything else.
-
 #include "../DataStructures/Queue.h"
-#include "../Entities/Branch.h"
+#include "../DataStructures/PriorityQueue.h"
+#include "../DataStructures/LinkedList.h"
+#include "../DataStructures/LookupTable.h"
 
+class Branch;
 class Event;
+class Patient;
 
 class Clinic {
 public:
-    Clinic() {}
+    
+    Clinic()
+        : branches(nullptr), numBranches(0),
+        waitingEmergency(nullptr), waitingRegular(nullptr), inVisit(nullptr),
+        currentTime(0),
+        setupDuration(0), wrapupDuration(0),
+        seniorPerTestDuration(0), juniorPerTestDuration(0),
+        autoEscalationLimit(0)
+    {
+    }
+    ~Clinic();
+    
+    void loadUtilities(int setup, int wrapup, int seniorPerTest,
+        int juniorPerTest, int autoE);
 
-    // TODO: void loadUtilities(int setup, int wrapup, int seniorPerTest, int juniorPerTest, int autoE);
-    // TODO: void run(); // the main time-step loop (t = 0, 1, 2, ...)
+    void setBranches(Branch* branchArray, int count);
 
-    // Called by Event::Execute() implementations:
-    // TODO: void handleCheckIn(/* patient info */);
-    // TODO: void handleLeave(int patientId);
-    // TODO: void handleEscalate(int patientId);
+    void addEvent(Event* e);
+
+    void run();                         
+    void handleCheckIn(Patient* p);
+    void handleLeave(int patientId);
+    void handleEscalate(int patientId);
+
+    static const int WAIT_WEIGHT = 2;
+    static const int TEST_WEIGHT = 1;
+    static double calculatePriority(int checkInTime, int currentTime, int numTests);
 
 private:
-    // TODO: Branch* branches; int numBranches;
-    // TODO: Queue<Event*> events;
-    // TODO: per-branch waiting Emergency / waiting Regular / in-visit structures
-    // TODO: int currentTime;
-
-    // TODO: void assignDoctors();       // Senior/Junior preference rules
-    // TODO: void checkAutoEscalation(); // AutoE threshold check
+    
+    Branch* branches;
+    int numBranches;
+    Queue<Event*> eventQueue;
+    LookupTable<Patient*> patientLookup;
+    DoublyLinkedList<Patient*>* waitingEmergency; 
+    PriorityQueue<Patient*>* waitingRegular;       
+    DoublyLinkedList<Patient*>* inVisit;           
+    DoublyLinkedList<Patient*> donePatients;
+    int currentTime;
+    int setupDuration;
+    int wrapupDuration;
+    int seniorPerTestDuration;
+    int juniorPerTestDuration;
+    int autoEscalationLimit;
 };
