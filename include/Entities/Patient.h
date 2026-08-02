@@ -1,38 +1,38 @@
 #pragma once
-// Owner: Member 2 (System Entities & Events)
-// Pure data holder. No simulation logic here (that lives in Clinic/Scheduler).
-// --- Note from Clinic (Member 4) ---
-// Ya Ehab tany Once CP2's handleCheckIn(Patient* p) is implemented, Clinic will call
-// getters matching this exact shape to compute priority for Regular
-// patients:
-//     int checkInTime = p->getCheckInTime();
-//     int numTests     = p->getNumTests();
-// (fed into Clinic::calculatePriority(checkInTime, currentTime, numTests))
-// Also needs: getId() (for LookupTable), getBranch() (to route into the
-// right per-branch waiting structure).
+#include <string>
 
 enum class PatientType { Regular, Emergency };
+enum class PatientStatus { Waiting, InTest, Finished};
 
 class Patient {
+private:
+    int id;
+    int checkTime;
+    int numTest;
+    PatientType type;
+    int wt, vt, ft;
+    PatientStatus st;
+    int branch;
+
 public:
-    Patient() {}
-    // TODO: Patient(int id, PatientType type, int checkInTime, int branch, int numTests);
+    Patient();
+    Patient(int id, int checkInTime, PatientType type, int numTests, int branch);
 
-    // TODO getters/setters for:
-    // int id
-    // PatientType type
-    // int checkInTime
-    // int startVisitTime   (set by Scheduler when assigned to a doctor)
-    // int finishTime        (set by Scheduler when visit completes)
-    // int numTests
-    // int branch
+    int getId() const;
+    int getCheckInTime() const;
+    PatientType getType() const;
+    int getNumTests() const;
+    int getBranch() const;
+    int getWT() const;
+    int getVT() const;
+    int getFT() const;
+    PatientStatus getStatus() const;
 
-    // NOTE: heapIndex is owned/managed ONLY by PriorityQueue (Member 1).
-    // Do not read/write it anywhere else.
-    // int heapIndex = -1;
+    void setType(PatientType type);   // in case of escalation
+    void setWT(int wt);
+    void setVT(int vt);
+    void setFT(int ft);
+    void setStatus(PatientStatus st);
 
-    // WT/VT are DERIVED, not stored:
-    // WT = startVisitTime - checkInTime
-    // VT = finishTime - startVisitTime
-    // (computed by whoever needs them, e.g. Scheduler / Statistics)
+    void FinalVT(int Ttest, int Tsetup, int Twrapup);
 };

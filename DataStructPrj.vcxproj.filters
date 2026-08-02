@@ -7,27 +7,45 @@
     <Filter Include="Source Files\headera">
       <UniqueIdentifier>{6a376286-8c31-4f2d-afa4-51ddbb1f1e10}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Entities">
+      <UniqueIdentifier>{20917b31-3e57-4935-8c3c-1f0d29c39b32}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Simulation\Clinic.cpp" />
+    <ClCompile Include="Patient.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Doctor.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="Branch.cpp">
+      <Filter>Entities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Events\UrgentEvent.h" />
     <ClInclude Include="include\IO\Statistics.h" />
     <ClInclude Include="include\DataStructures\Queue.h" />
     <ClInclude Include="include\DataStructures\PriorityQueue.h" />
-    <ClInclude Include="include\Entities\Patient.h" />
     <ClInclude Include="include\DataStructures\LookupTable.h" />
     <ClInclude Include="include\DataStructures\LinkedList.h" />
     <ClInclude Include="include\Events\LeaveEvent.h" />
     <ClInclude Include="include\IO\FileManager.h" />
     <ClInclude Include="include\Events\Event.h" />
-    <ClInclude Include="include\Entities\Doctor.h" />
     <ClInclude Include="include\Simulation\Clinic.h" />
     <ClInclude Include="include\Events\CheckInEvent.h" />
-    <ClInclude Include="include\Entities\Branch.h" />
+    <ClInclude Include="include\Entities\Patient.h">
+      <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Entities\Doctor.h">
+      <Filter>Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Entities\Branch.h">
+      <Filter>Entities</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

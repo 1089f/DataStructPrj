@@ -85,7 +85,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Branch.cpp" />
+    <ClCompile Include="Doctor.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Patient.cpp" />
     <ClCompile Include="src\Simulation\Clinic.cpp" />
   </ItemGroup>
   <ItemGroup>
