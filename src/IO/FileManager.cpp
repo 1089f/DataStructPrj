@@ -71,18 +71,17 @@ bool FileManager::LoadData(const std::string& filepath, Clinic& clinic) {
             file >> typ >> ts >> id >> br >> tests;
 
             PatientType pType = (typ == 'E') ? PatientType::Emergency : PatientType::Regular;
-            Patient* p = new Patient(id, ts, pType, tests, br);
-            clinic.addEvent(new CheckInEvent(ts, p));
+            clinic.addEvent(new CheckIn(ts, pType, id, br, tests));
 
         } else if (eventType == 'L') {
             int ts, id;
             file >> ts >> id;
-            clinic.addEvent(new LeaveEvent(ts, id));
+            clinic.addEvent(new Leave(ts, id));
 
         } else if (eventType == 'U') {
             int ts, id;
             file >> ts >> id;
-            clinic.addEvent(new UrgentEvent(ts, id));
+            clinic.addEvent(new Urgent(ts, id));
         }
     }
 
