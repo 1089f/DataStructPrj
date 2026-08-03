@@ -9,6 +9,8 @@ private:
 public:
     Branch();
     Branch(int branchNum, int numDoc);
+    Branch(const Branch& other);
+    Branch& operator=(const Branch& other);
     ~Branch();
 
     Doctor* getDoc();
