@@ -1,10 +1,15 @@
 #pragma once
 #include "Event.h"
-// Owner (class/shape): Member 2 | Owner (Execute() body): Member 4
 
 class LeaveEvent : public Event {
+private:
+    int timestamp;
+    int patientId;
+
 public:
-    // TODO: LeaveEvent(int ts, int patientId);
-    int getTimestamp() const override { return 0; /* TODO */ }
-    void Execute(Clinic& clinic) override; // TODO: implemented by Member 4
+    LeaveEvent(int ts, int pid);
+
+    int getTimestamp() const override;
+    int getPatientId() const;
+    void Execute(Clinic& clinic) override;
 };
