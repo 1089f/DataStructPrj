@@ -1,14 +1,26 @@
 #pragma once
-// Owner: Member 3 (File I/O & Statistics)
-// Collects stats as patients finish, writes the output file.
+#include <fstream>
+#include "../Entities/Branch.h"
 
 class Patient;
 
 class Statistics {
-public:
-    Statistics() {}
+private:
+    int totalPatients;
+    int emergencyCount;
+    int regularCount;
+    int escalatedCount;
+    double totalWT;
+    double totalVT;
 
-    // TODO: void onPatientFinished(Patient* p); // called by Scheduler (Member 4)
-    // TODO: void writeOutputFile(const std::string& filepath);
-    // TODO: totals: regular/emergency counts, avg WT, avg VT, escalation %
+public:
+    Statistics();
+
+    void record(Patient* p);
+    void recordEscalation();
+    void writeStats(std::ofstream& out, Branch* branches, int branchCount);
+
+    int getTotalPatients() const;
+    int getEscalatedCount() const;
+    int getRegularCount() const;
 };
