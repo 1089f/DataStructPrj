@@ -85,12 +85,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="include\Entities\Branch.cpp" />
-    <ClCompile Include="include\Entities\Doctor.cpp" />
-    <ClCompile Include="include\Entities\Patient.cpp" />
-    <ClCompile Include="include\Events\CheckIn.cpp" />
-    <ClCompile Include="include\Events\Leave.cpp" />
-    <ClCompile Include="include\Events\Urgent.cpp" />
+    <ClCompile Include="src\Entities\Branch.cpp" />
+    <ClCompile Include="src\Entities\Doctor.cpp" />
+    <ClCompile Include="src\Entities\Patient.cpp" />
+    <ClCompile Include="src\Events\CheckIn.cpp" />
+    <ClCompile Include="src\Events\Leave.cpp" />
+    <ClCompile Include="src\Events\Urgent.cpp" />
     <ClCompile Include="src\IO\FileManager.cpp" />
     <ClCompile Include="src\IO\Statistics.cpp" />
     <ClCompile Include="main.cpp" />

@@ -1,4 +1,4 @@
-#include "Patient.h"
+#include "../../include/Entities/Patient.h"
 
 Patient::Patient()
 	: id(0), checkTime(0), type(PatientType::Regular), numTest(0), branch(0),
