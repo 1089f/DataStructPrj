@@ -7,9 +7,9 @@
 #include "../../include/Entities/Branch.h"
 #include "../../include/Entities/Doctor.h"
 #include "../../include/Entities/Patient.h"
-#include "../../include/Events/CheckInEvent.h"
-#include "../../include/Events/LeaveEvent.h"
-#include "../../include/Events/UrgentEvent.h"
+#include "../../include/Events/CheckIn.h"
+#include "../../include/Events/Leave.h"
+#include "../../include/Events/Urgent.h"
 
 FileManager::FileManager() {}
 
