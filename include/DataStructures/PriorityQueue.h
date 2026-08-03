@@ -1,6 +1,5 @@
 #pragma once
 #include <iostream>
-#include <algorithm>
 
 template <typename T>
 class PriorityQueue {
@@ -8,11 +7,25 @@ private:
     struct HeapItem {
         T data;
         double priority;
+        int heapIndex; 
     };
 
     HeapItem* heap;
     int capacity;
     int count;
+
+    void swapItems(int i, int j) {
+         
+        HeapItem temp = heap[i];
+        heap[i] = heap[j];
+        heap[j] = temp;
+
+    
+        heap[i].heapIndex = i;
+        heap[j].heapIndex = j;
+
+        
+    }
 
     void resize() {
         capacity *= 2;
@@ -28,7 +41,7 @@ private:
         while (index > 0) {
             int parent = (index - 1) / 2;
             if (heap[index].priority > heap[parent].priority) {
-                std::swap(heap[index], heap[parent]);
+                swapItems(index, parent); // 3. استخدام swapItems بدلاً من std::swap
                 index = parent;
             }
             else {
@@ -52,7 +65,7 @@ private:
             }
 
             if (maxIndex != index) {
-                std::swap(heap[index], heap[maxIndex]);
+                swapItems(index, maxIndex); 
                 index = maxIndex;
             }
             else {
@@ -78,46 +91,59 @@ public:
         return count;
     }
 
-    // adding element with priority O(log N)
     void insert(const T& val, double priority) {
         if (count == capacity) {
             resize();
         }
-        heap[count] = { val, priority };
+        heap[count] = { val, priority, count };
         siftUp(count);
         count++;
     }
 
-    // extracting element with highest priority O(log N)
+   
     bool extractMax(T& val) {
         if (isEmpty()) return false;
 
         val = heap[0].data;
         heap[0] = heap[count - 1];
+        heap[0].heapIndex = 0; 
         count--;
         siftDown(0);
         return true;
     }
 
-    // viewing element with highest priority without removing it O(1)
     bool peekMax(T& val) const {
         if (isEmpty()) return false;
         val = heap[0].data;
         return true;
     }
 
-    // removing element at a specific index in the heap O(log N) - dedicated for     Leave Events
+  
     bool removeAtIndex(int index, T& val) {
         if (index < 0 || index >= count) return false;
 
         val = heap[index].data;
+
+      
+        if (index == count - 1) {
+            count--;
+            return true;
+        }
+
+      
         heap[index] = heap[count - 1];
+        heap[index].heapIndex = index;
         count--;
 
-        if (index < count) {
-            siftUp(index);
-            siftDown(index);
-        }
+      
+        siftUp(index);
+        siftDown(index);
         return true;
+    }
+    bool removeByValue(const T& val, int targetIndex, T& removedVal) {
+        if (targetIndex >= 0 && targetIndex < count && heap[targetIndex].data == val) {
+            return removeAtIndex(targetIndex, removedVal);
+        }
+        return false;
     }
 };
