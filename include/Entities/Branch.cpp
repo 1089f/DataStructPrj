@@ -1,4 +1,4 @@
-#include "include/Entities/Branch.h"
+#include "Branch.h"
 
 Branch::Branch() : branchNum(0), docArr(nullptr), docCnt(0) {}
 

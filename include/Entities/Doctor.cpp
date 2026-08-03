@@ -1,4 +1,4 @@
-#include "include/Entities/Doctor.h"
+#include "Doctor.h"
 
 Doctor::Doctor()
     : branch(0), lvl(DoctorLvl::Junior), shiftStart(0),

@@ -10,34 +10,36 @@
     <Filter Include="Entities">
       <UniqueIdentifier>{20917b31-3e57-4935-8c3c-1f0d29c39b32}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Events">
+      <UniqueIdentifier>{1172f156-28ed-4b71-97db-f44ac46fe72a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Simulation\Clinic.cpp" />
-    <ClCompile Include="Patient.cpp">
+    <ClCompile Include="include\Entities\Patient.cpp">
       <Filter>Entities</Filter>
     </ClCompile>
-    <ClCompile Include="Doctor.cpp">
+    <ClCompile Include="include\Entities\Doctor.cpp">
       <Filter>Entities</Filter>
     </ClCompile>
-    <ClCompile Include="Branch.cpp">
+    <ClCompile Include="include\Entities\Branch.cpp">
       <Filter>Entities</Filter>
     </ClCompile>
+    <ClCompile Include="include\Events\CheckIn.cpp" />
+    <ClCompile Include="include\Events\Leave.cpp" />
+    <ClCompile Include="include\Events\Urgent.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Events\UrgentEvent.h" />
     <ClInclude Include="include\IO\Statistics.h" />
     <ClInclude Include="include\DataStructures\Queue.h" />
     <ClInclude Include="include\DataStructures\PriorityQueue.h" />
     <ClInclude Include="include\DataStructures\LookupTable.h" />
     <ClInclude Include="include\DataStructures\LinkedList.h" />
-    <ClInclude Include="include\Events\LeaveEvent.h" />
     <ClInclude Include="include\IO\FileManager.h" />
-    <ClInclude Include="include\Events\Event.h" />
     <ClInclude Include="include\Simulation\Clinic.h" />
-    <ClInclude Include="include\Events\CheckInEvent.h" />
     <ClInclude Include="include\Entities\Patient.h">
       <Filter>Entities</Filter>
     </ClInclude>
@@ -47,5 +49,9 @@
     <ClInclude Include="include\Entities\Branch.h">
       <Filter>Entities</Filter>
     </ClInclude>
+    <ClInclude Include="include\Events\CheckIn.h" />
+    <ClInclude Include="include\Events\Leave.h" />
+    <ClInclude Include="include\Events\Urgent.h" />
+    <ClInclude Include="include\Events\Event.h" />
   </ItemGroup>
 </Project>

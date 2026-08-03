@@ -85,10 +85,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Branch.cpp" />
-    <ClCompile Include="Doctor.cpp" />
+    <ClCompile Include="include\Entities\Branch.cpp" />
+    <ClCompile Include="include\Entities\Doctor.cpp" />
+    <ClCompile Include="include\Events\CheckIn.cpp" />
+    <ClCompile Include="include\Events\Leave.cpp" />
+    <ClCompile Include="include\Events\Urgent.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Patient.cpp" />
+    <ClCompile Include="include\Entities\Patient.cpp" />
     <ClCompile Include="src\Simulation\Clinic.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -99,10 +102,10 @@
     <ClInclude Include="include\Entities\Patient.h" />
     <ClInclude Include="include\Entities\Doctor.h" />
     <ClInclude Include="include\Entities\Branch.h" />
+    <ClInclude Include="include\Events\CheckIn.h" />
     <ClInclude Include="include\Events\Event.h" />
-    <ClInclude Include="include\Events\CheckInEvent.h" />
-    <ClInclude Include="include\Events\LeaveEvent.h" />
-    <ClInclude Include="include\Events\UrgentEvent.h" />
+    <ClInclude Include="include\Events\Leave.h" />
+    <ClInclude Include="include\Events\Urgent.h" />
     <ClInclude Include="include\IO\FileManager.h" />
     <ClInclude Include="include\IO\Statistics.h" />
     <ClInclude Include="include\Simulation\Clinic.h" />
