@@ -1,6 +1,5 @@
 #pragma once
 #include <iostream>
-#include <algorithm>
 
 template <typename T>
 class PriorityQueue {
@@ -8,11 +7,26 @@ private:
     struct HeapItem {
         T data;
         double priority;
+        int heapIndex;
     };
 
     HeapItem* heap;
     int capacity;
     int count;
+
+    void setIndex(int pos) {
+        heap[pos].heapIndex = pos;
+        heap[pos].data->setHeapIndex(pos);
+    }
+
+    void swapItems(int i, int j) {
+        HeapItem temp = heap[i];
+        heap[i] = heap[j];
+        heap[j] = temp;
+
+        setIndex(i);
+        setIndex(j);
+    }
 
     void resize() {
         capacity *= 2;
@@ -22,13 +36,14 @@ private:
         }
         delete[] heap;
         heap = newHeap;
+       
     }
 
     void siftUp(int index) {
         while (index > 0) {
             int parent = (index - 1) / 2;
             if (heap[index].priority > heap[parent].priority) {
-                std::swap(heap[index], heap[parent]);
+                swapItems(index, parent);
                 index = parent;
             }
             else {
@@ -46,13 +61,12 @@ private:
             if (heap[leftChild].priority > heap[maxIndex].priority) {
                 maxIndex = leftChild;
             }
-
             if (rightChild < count && heap[rightChild].priority > heap[maxIndex].priority) {
                 maxIndex = rightChild;
             }
 
             if (maxIndex != index) {
-                std::swap(heap[index], heap[maxIndex]);
+                swapItems(index, maxIndex);
                 index = maxIndex;
             }
             else {
@@ -70,54 +84,62 @@ public:
         delete[] heap;
     }
 
-    bool isEmpty() const {
-        return count == 0;
-    }
+    bool isEmpty() const { return count == 0; }
+    int size() const { return count; }
 
-    int size() const {
-        return count;
-    }
-
-    // adding element with priority O(log N)
+    // O(log N) 
     void insert(const T& val, double priority) {
         if (count == capacity) {
             resize();
         }
-        heap[count] = { val, priority };
+        heap[count] = { val, priority, count };
+        val->setHeapIndex(count);
         siftUp(count);
         count++;
     }
 
-    // extracting element with highest priority O(log N)
+    // O(log N)
     bool extractMax(T& val) {
         if (isEmpty()) return false;
 
         val = heap[0].data;
         heap[0] = heap[count - 1];
         count--;
-        siftDown(0);
+        if (count > 0) {
+            setIndex(0);
+            siftDown(0);
+        }
         return true;
     }
 
-    // viewing element with highest priority without removing it O(1)
+    // O(1)
     bool peekMax(T& val) const {
         if (isEmpty()) return false;
         val = heap[0].data;
         return true;
     }
 
-    // removing element at a specific index in the heap O(log N) - dedicated for     Leave Events
     bool removeAtIndex(int index, T& val) {
         if (index < 0 || index >= count) return false;
 
         val = heap[index].data;
+
+        if (index == count - 1) {
+            count--;
+            return true;
+        }
+
         heap[index] = heap[count - 1];
         count--;
+        setIndex(index);
 
-        if (index < count) {
-            siftUp(index);
-            siftDown(index);
-        }
+        siftUp(index);
+        siftDown(index);
         return true;
+    }
+    bool remove(const T& val, T& removedVal) {
+        int idx = val->getHeapIndex();
+        if (idx < 0 || idx >= count || heap[idx].data != val) return false;
+        return removeAtIndex(idx, removedVal);
     }
 };
