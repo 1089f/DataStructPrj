@@ -1,4 +1,5 @@
-#include <iostream>#include "include/Simulation/Clinic.h"
+#include <iostream>
+#include "include/Simulation/Clinic.h"
 #include "include/IO/FileManager.h"
 
 int main() {

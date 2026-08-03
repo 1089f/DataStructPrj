@@ -87,11 +87,12 @@
   <ItemGroup>
     <ClCompile Include="include\Entities\Branch.cpp" />
     <ClCompile Include="include\Entities\Doctor.cpp" />
+    <ClCompile Include="include\Entities\Patient.cpp" />
     <ClCompile Include="include\Events\CheckIn.cpp" />
     <ClCompile Include="include\Events\Leave.cpp" />
     <ClCompile Include="include\Events\Urgent.cpp" />
+    <ClCompile Include="include\IO\FileManager.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="include\Entities\Patient.cpp" />
     <ClCompile Include="src\Simulation\Clinic.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include "../Entities/Patient.h"
 
 template <typename T>
 class PriorityQueue {

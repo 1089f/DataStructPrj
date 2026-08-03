@@ -1,13 +1,13 @@
-#include "include/Entities/Patient.h"
+#include "Patient.h"
 
 Patient::Patient()
-    : id(0), checkTime(0), type(PatientType::Regular), numTest(0), branch(0),
-    wt(0), vt(0), ft(0), st(PatientStatus::Waiting) {
+	: id(0), checkTime(0), type(PatientType::Regular), numTest(0), branch(0),
+	wt(0), vt(0), ft(0), st(PatientStatus::Waiting), heapIndex(-1) {
 }
 
 Patient::Patient(int id, int checkInTime, PatientType type, int numTests, int branch)
-    : id(id), checkTime(checkInTime), type(type), numTest(numTests), branch(branch),
-    wt(0), vt(0), ft(0), st(PatientStatus::Waiting) {
+	: id(id), checkTime(checkInTime), type(type), numTest(numTests), branch(branch),
+	wt(0), vt(0), ft(0), st(PatientStatus::Waiting), heapIndex(-1) {
 }
 
 int Patient::getId() const { return id; }
@@ -27,6 +27,13 @@ void Patient::setFT(int ftime) { ft = ftime; }
 void Patient::setStatus(PatientStatus s) { st = s; }
 
 void Patient::FinalVT(int Ttest, int Tsetup, int Twrapup) {
-    vt = Tsetup+ Twrapup+ (numTest * Ttest);
+	vt = Tsetup + Twrapup + (numTest * Ttest);
 }
 
+void Patient::setHeapIndex(int index) {
+	heapIndex = index;
+}
+
+int Patient::getHeapIndex() const {
+	return heapIndex;
+}

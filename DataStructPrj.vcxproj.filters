@@ -19,9 +19,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Simulation\Clinic.cpp" />
-    <ClCompile Include="include\Entities\Patient.cpp">
-      <Filter>Entities</Filter>
-    </ClCompile>
     <ClCompile Include="include\Entities\Doctor.cpp">
       <Filter>Entities</Filter>
     </ClCompile>
@@ -31,6 +28,8 @@
     <ClCompile Include="include\Events\CheckIn.cpp" />
     <ClCompile Include="include\Events\Leave.cpp" />
     <ClCompile Include="include\Events\Urgent.cpp" />
+    <ClCompile Include="include\Entities\Patient.cpp" />
+    <ClCompile Include="include\IO\FileManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\IO\Statistics.h" />

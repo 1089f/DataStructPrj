@@ -13,6 +13,7 @@ private:
     int wt, vt, ft;
     PatientStatus st;
     int branch;
+    int heapIndex;
 
 public:
     Patient();
@@ -35,4 +36,7 @@ public:
     void setStatus(PatientStatus st);
 
     void FinalVT(int Ttest, int Tsetup, int Twrapup);
+
+    void setHeapIndex(int index);
+    int getHeapIndex() const;
 };
