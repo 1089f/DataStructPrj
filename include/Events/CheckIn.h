@@ -9,7 +9,6 @@ private:
     int id;
     int branch;
     int tests;
-
 public:
     CheckIn(int ts, PatientType type, int id, int branch, int tests);
 

@@ -54,4 +54,6 @@ private:
     int seniorPerTestDuration;
     int juniorPerTestDuration;
     int autoEscalationLimit;
+    bool anyPatientsWaiting() const;
+    bool anyPatientsInVisit() const;
 };

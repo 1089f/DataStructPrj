@@ -1,5 +1,6 @@
 #include "../../include/Simulation/Clinic.h"
 #include "../../include/Entities/Branch.h"
+#include "../../include/Events/Event.h"
 
 Clinic::~Clinic() {
     delete[] branches;
@@ -30,6 +31,19 @@ void Clinic::addEvent(Event* e) {
 }
 
 void Clinic::run() {
+    while (!eventQueue.isEmpty() || anyPatientsWaiting() || anyPatientsInVisit()) {
+        // 1. process events due at currentTime
+        Event* e = nullptr;
+        while (eventQueue.peek(e) && e->getTimestamp() == currentTime) {
+            eventQueue.dequeue(e);
+            e->Execute(*this);
+        }
+        // 2. free up doctors (visits done, breaks ended)
+        // 3. auto-escalation check
+        // 4. assign doctors to waiting patients
+
+        currentTime++;
+    }
 }
 
 void Clinic::handleCheckIn(Patient* p) {
@@ -43,4 +57,18 @@ void Clinic::handleEscalate(int patientId) {
 double Clinic::calculatePriority(int checkInTime, int currentTime, int numTests) {
     int waitTime = currentTime - checkInTime;
     return (WAIT_WEIGHT * waitTime) - (TEST_WEIGHT * numTests);
+}
+bool Clinic::anyPatientsWaiting() const {
+    for (int i = 0; i < numBranches; i++) {
+        if (!waitingEmergency[i].isEmpty()) return true;
+        if (!waitingRegular[i].isEmpty()) return true;
+    }
+    return false;
+}
+
+bool Clinic::anyPatientsInVisit() const {
+    for (int i = 0; i < numBranches; i++) {
+        if (!inVisit[i].isEmpty()) return true;
+    }
+    return false;
 }
