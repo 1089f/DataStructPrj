@@ -1,9 +1,12 @@
 #pragma once
 #include <iostream>
-#include "../Entities/Patient.h"
 
 template <typename T>
 class PriorityQueue {
+public:
+    typedef double (*PriorityFunc)(const T&);
+    typedef bool (*ComparatorFunc)(const T&, const T&);
+
 private:
     struct HeapItem {
         T data;
@@ -15,9 +18,14 @@ private:
     int capacity;
     int count;
 
+    PriorityFunc priorityFunc;
+    ComparatorFunc compFunc;
+
     void setIndex(int pos) {
         heap[pos].heapIndex = pos;
-        heap[pos].data->setHeapIndex(pos);
+        if (heap[pos].data != nullptr) {
+            heap[pos].data->setHeapIndex(pos);
+        }
     }
 
     void swapItems(int i, int j) {
@@ -30,20 +38,30 @@ private:
     }
 
     void resize() {
-        capacity *= 2;
-        HeapItem* newHeap = new HeapItem[capacity];
+        int newCap = capacity * 2;
+        HeapItem* newHeap = new HeapItem[newCap];
         for (int i = 0; i < count; i++) {
             newHeap[i] = heap[i];
         }
         delete[] heap;
         heap = newHeap;
-       
+        capacity = newCap;
+    }
+
+    bool isHigherPriority(int i, int j) const {
+        if (compFunc != nullptr) {
+            return compFunc(heap[i].data, heap[j].data);
+        }
+        if (priorityFunc != nullptr) {
+            return priorityFunc(heap[i].data) > priorityFunc(heap[j].data);
+        }
+        return heap[i].priority > heap[j].priority;
     }
 
     void siftUp(int index) {
         while (index > 0) {
             int parent = (index - 1) / 2;
-            if (heap[index].priority > heap[parent].priority) {
+            if (isHigherPriority(index, parent)) {
                 swapItems(index, parent);
                 index = parent;
             }
@@ -59,10 +77,10 @@ private:
             int rightChild = 2 * index + 2;
             int maxIndex = index;
 
-            if (heap[leftChild].priority > heap[maxIndex].priority) {
+            if (isHigherPriority(leftChild, maxIndex)) {
                 maxIndex = leftChild;
             }
-            if (rightChild < count && heap[rightChild].priority > heap[maxIndex].priority) {
+            if (rightChild < count && isHigherPriority(rightChild, maxIndex)) {
                 maxIndex = rightChild;
             }
 
@@ -77,12 +95,31 @@ private:
     }
 
 public:
-    PriorityQueue(int initialCap = 20) : capacity(initialCap), count(0) {
+    PriorityQueue(int initialCap = 20)
+        : capacity(initialCap), count(0), priorityFunc(nullptr), compFunc(nullptr) {
+        heap = new HeapItem[capacity];
+    }
+
+    PriorityQueue(PriorityFunc pfunc, int initialCap = 20)
+        : capacity(initialCap), count(0), priorityFunc(pfunc), compFunc(nullptr) {
+        heap = new HeapItem[capacity];
+    }
+
+    PriorityQueue(ComparatorFunc comp, int initialCap = 20)
+        : capacity(initialCap), count(0), priorityFunc(nullptr), compFunc(comp) {
         heap = new HeapItem[capacity];
     }
 
     ~PriorityQueue() {
         delete[] heap;
+    }
+
+    void setPriorityFunc(PriorityFunc pfunc) {
+        priorityFunc = pfunc;
+    }
+
+    void setComparator(ComparatorFunc comp) {
+        compFunc = comp;
     }
 
     bool isEmpty() const { return count == 0; }
@@ -94,9 +131,19 @@ public:
             resize();
         }
         heap[count] = { val, priority, count };
-        val->setHeapIndex(count);
+        if (val != nullptr) {
+            val->setHeapIndex(count);
+        }
         siftUp(count);
         count++;
+    }
+
+    void insert(const T& val) {
+        double prio = 0.0;
+        if (priorityFunc != nullptr && val != nullptr) {
+            prio = priorityFunc(val);
+        }
+        insert(val, prio);
     }
 
     // O(log N)
@@ -104,6 +151,10 @@ public:
         if (isEmpty()) return false;
 
         val = heap[0].data;
+        if (val != nullptr) {
+            val->setHeapIndex(-1);
+        }
+
         heap[0] = heap[count - 1];
         count--;
         if (count > 0) {
@@ -124,6 +175,9 @@ public:
         if (index < 0 || index >= count) return false;
 
         val = heap[index].data;
+        if (val != nullptr) {
+            val->setHeapIndex(-1);
+        }
 
         if (index == count - 1) {
             count--;
@@ -138,9 +192,22 @@ public:
         siftDown(index);
         return true;
     }
+
     bool remove(const T& val, T& removedVal) {
+        if (val == nullptr) return false;
         int idx = val->getHeapIndex();
         if (idx < 0 || idx >= count || heap[idx].data != val) return false;
         return removeAtIndex(idx, removedVal);
+    }
+
+    void reheapify() {
+        if (priorityFunc != nullptr) {
+            for (int i = 0; i < count; i++) {
+                heap[i].priority = priorityFunc(heap[i].data);
+            }
+        }
+        for (int i = (count / 2) - 1; i >= 0; i--) {
+            siftDown(i);
+        }
     }
 };
