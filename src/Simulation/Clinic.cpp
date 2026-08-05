@@ -118,7 +118,7 @@ for (int b = 0; b < numBranches; b++) {
         // 4. assign doctors to waiting patients
         for (int b = 0; b < numBranches; b++) {
 
-            // Emergency first — prefer Senior, fall back to Junior
+            // Emergency first   prefer Senior, fall back to Junior
             while (!waitingEmergency[b].isEmpty()) {
                 Doctor* doc = findDoctor(b, true);
                 if (doc == nullptr) break;
@@ -129,7 +129,7 @@ for (int b = 0; b < numBranches; b++) {
                 startVisit(p, doc, b);
             }
 
-            // Then Regular — prefer Junior, fall back to Senior
+            // Then Regular   prefer Junior, fall back to Senior
             while (!waitingRegular[b].isEmpty()) {
                 Doctor* doc = findDoctor(b, false);
                 if (doc == nullptr) break;
@@ -237,9 +237,7 @@ Doctor* Clinic::findDoctor(int branchIdx, bool preferSenior) {
     return nullptr;
 }
 void Clinic::startVisit(Patient* p, Doctor* doc, int branchIdx) {
-    std::cout << "t=" << currentTime << " assigning P" << p->getId()
-        << " type=" << (p->getType() == PatientType::Emergency ? "E" : "R")
-        << "\n";
+
     int perTest = (doc->getLvl() == DoctorLvl::Senior)
         ? seniorPerTestDuration
         : juniorPerTestDuration;
