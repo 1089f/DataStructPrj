@@ -1,4 +1,5 @@
-// NOTE (Member 4 / Hassan):
+// NOTE (Member 4 / Hassan): 
+// reply from member 2 / omar  يعم متتعبناش معاك بقا
 // Scheduler uses: getId(), getCheckInTime(), getNumTests(), getBranch(),
 // getType(), getStatus(), setType(), setWT(), setVT(), setFT(), setStatus().
 // heapIndex is managed by PriorityQueue only - don't touch it elsewhere.
@@ -43,4 +44,7 @@ public:
 
     void setHeapIndex(int index);
     int getHeapIndex() const;
+
+    void markInVisit();
+    void markDone(int finishTime);
 };

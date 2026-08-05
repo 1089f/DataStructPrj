@@ -48,8 +48,8 @@ void Clinic::run() {
                 if (doc.getAvlbl() == DoctorAvlbl::Busy && doc.getBusyUntil() == currentTime) {
                     Patient* p = doc.getCurrentPatient();
                     if (p) {
-                        p->setFT(currentTime);
-                        p->setStatus(PatientStatus::Finished);
+                        p->markDone(currentTime);
+                        p->markDone(currentTime);
 
                         auto* node = inVisit[b].getHead();
                         while (node != nullptr) {
@@ -246,7 +246,7 @@ void Clinic::startVisit(Patient* p, Doctor* doc, int branchIdx) {
 
     p->setWT(currentTime - p->getCheckInTime());
     p->setVT(visitTime);
-    p->setStatus(PatientStatus::InTest);
+    p->markInVisit(); 
 
     doc->assignPatient(p, currentTime + visitTime);
     inVisit[branchIdx].insertEnd(p);

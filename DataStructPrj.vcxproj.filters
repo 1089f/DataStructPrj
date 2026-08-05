@@ -29,7 +29,8 @@
     <ClCompile Include="src\Events\Leave.cpp" />
     <ClCompile Include="src\Events\Urgent.cpp" />
     <ClCompile Include="src\Entities\Patient.cpp" />
-    <ClCompile Include="include\IO\FileManager.cpp" />
+    <ClCompile Include="src\IO\FileManager.cpp" />
+    <ClCompile Include="src\IO\Statistics.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\IO\Statistics.h" />

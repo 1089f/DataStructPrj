@@ -37,3 +37,12 @@ void Patient::setHeapIndex(int index) {
 int Patient::getHeapIndex() const {
 	return heapIndex;
 }
+
+void Patient::markInVisit() {
+	st = PatientStatus::InTest;
+}
+
+void Patient::markDone(int finishTime) {
+	ft = finishTime;
+	st = PatientStatus::Finished;
+}
