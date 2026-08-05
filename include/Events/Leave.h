@@ -7,6 +7,6 @@ private:
 
 public:
     Leave(int ts, int id);
-    void Execute() override;
+    void Execute(Clinic& clinic) override;
     int getId() const;
 };
