@@ -4,7 +4,7 @@
 using namespace std;
 
 int main() {
-    std::string inputFile = "tests/sample_inputs/test1.txt";
+    std::string inputFile = "tests/sample_inputs/test10.txt";
 
     Clinic clinic;
     FileManager fm;
