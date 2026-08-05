@@ -170,6 +170,11 @@ public:
         val = heap[0].data;
         return true;
     }
+    bool getAt(int i, T& val) const {
+        if (i < 0 || i >= count) return false;
+        val = heap[i].data;
+        return true;
+    }//Member 4 added it
 
     bool removeAtIndex(int index, T& val) {
         if (index < 0 || index >= count) return false;

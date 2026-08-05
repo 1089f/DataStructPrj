@@ -1,8 +1,9 @@
 #pragma once
 
 enum class DoctorLvl { Senior, Junior };
-enum class DoctorAvlbl {Available, OnBreak, OffShift};
+enum class DoctorAvlbl { Available, Busy, OnBreak, OffShift };
 
+class Patient;
 class Doctor {
 private:
     int branch;
@@ -12,6 +13,9 @@ private:
     int brDur;
     DoctorAvlbl status;
     int patientSncBr;
+    int busyUntil;
+    int breakEndsAt;
+    Patient* currentPatient;
 public:
     Doctor();
     Doctor(int branch, DoctorLvl lvl, int shiftStart, int brAfter, int breakDur);
@@ -23,7 +27,12 @@ public:
     int getBreakDur() const;
     DoctorAvlbl getAvlbl() const;
     int getPatientSncBr() const;
-
+    int getBusyUntil() const;
+    int getBreakEndsAt() const;
+    Patient* getCurrentPatient() const;
+    void assignPatient(Patient* p, int finishTime);
+    void finishVisit(int currentTime);
+    void endBreak();
     void setAvlbl(DoctorAvlbl a);
     void setPatientSncBr(int cnt);
 

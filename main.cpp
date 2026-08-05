@@ -1,9 +1,10 @@
 #include <iostream>
 #include "include/Simulation/Clinic.h"
 #include "include/IO/FileManager.h"
+using namespace std;
 
 int main() {
-    std::string inputFile = "tests/sample_inputs/test1.txt";
+    std::string inputFile = "tests/sample_inputs/test4.txt";
 
     Clinic clinic;
     FileManager fm;
@@ -13,13 +14,17 @@ int main() {
         return 1;
     }
 
-    std::cout << "LoadData OK - CP1 build passes.\n";
+    cout << "LoadData OK - CP1 build passes.\n";
 
-    // CP2: uncomment once Clinic::run() is implemented by Member 4
-    // clinic.run();
-    // fm.WriteOutput("output.txt", clinic.getDonePatients(),
-    //                clinic.getBranches(), clinic.getNumBranches(),
-    //                clinic.getTotalRegular(), clinic.getEscalatedCount());
+    clinic.run();
+
+    cout << "Done patients: " << clinic.getDonePatients().size() << "\n";
+    cout << "Escalated: " << clinic.getEscalatedCount() << "\n";
+    cout << "Total regular: " << clinic.getTotalRegular() << "\n";
+
+    fm.WriteOutput("output.txt", clinic.getDonePatients(),
+        clinic.getBranches(), clinic.getNumBranches(),
+        clinic.getTotalRegular(), clinic.getEscalatedCount());
 
     return 0;
 }

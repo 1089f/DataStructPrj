@@ -1,11 +1,8 @@
 #include "../../include/Simulation/Clinic.h"
 #include "../../include/Entities/Branch.h"
-<<<<<<< HEAD
 #include "../../include/Events/Event.h"
-=======
 #include "../../include/Entities/Patient.h"
->>>>>>> f4cb2f16681399293851507640939baa3dd9743e
-
+#include "../../include/Entities/Doctor.h"
 Clinic::~Clinic() {
     delete[] branches;
     delete[] waitingEmergency;
@@ -36,15 +33,95 @@ void Clinic::addEvent(Event* e) {
 
 void Clinic::run() {
     while (!eventQueue.isEmpty() || anyPatientsWaiting() || anyPatientsInVisit()) {
-        // 1. process events due at currentTime
         Event* e = nullptr;
         while (eventQueue.peek(e) && e->getTimestamp() == currentTime) {
             eventQueue.dequeue(e);
             e->Execute(*this);
         }
-        // 2. free up doctors (visits done, breaks ended)
-        // 3. auto-escalation check
+        for (int b = 0; b < numBranches; b++) {
+            Doctor* docs = branches[b].getDoc();
+            int n = branches[b].getDocCnt();
+
+            for (int d = 0; d < n; d++) {
+                Doctor& doc = docs[d];
+
+                if (doc.getAvlbl() == DoctorAvlbl::Busy && doc.getBusyUntil() == currentTime) {
+                    Patient* p = doc.getCurrentPatient();
+                    if (p) {
+                        p->setFT(currentTime);
+                        p->setStatus(PatientStatus::Finished);
+
+                        auto* node = inVisit[b].getHead();
+                        while (node != nullptr) {
+                            if (node->data == p) {
+                                inVisit[b].removeNode(node);
+                                break;
+                            }
+                            node = node->next;
+                        }
+                        donePatients.insertEnd(p);
+                    }
+                    doc.finishVisit(currentTime);
+                }
+                else if (doc.getAvlbl() == DoctorAvlbl::OnBreak && doc.getBreakEndsAt() == currentTime) {
+                    doc.endBreak();
+                }
+                else if (doc.getAvlbl() == DoctorAvlbl::OffShift && currentTime >= doc.getShiftStart()) {
+                    doc.setAvlbl(DoctorAvlbl::Available);
+                }
+            }
+        }
+        for (int b = 0; b < numBranches; b++) {
+            // collect patients past the threshold before removing any,
+            // since remove() reshuffles the heap and invalidates indices
+            DoublyLinkedList<Patient*> toEscalate;
+
+            for (int i = 0; i < waitingRegular[b].size(); i++) {
+                Patient* p = nullptr;
+                if (waitingRegular[b].getAt(i, p) && p != nullptr) {
+                    if (currentTime - p->getCheckInTime() > autoEscalationLimit) {
+                        toEscalate.insertEnd(p);
+                    }
+                }
+            }
+
+            auto* node = toEscalate.getHead();
+            while (node != nullptr) {
+                Patient* p = node->data;
+                Patient* removed = nullptr;
+                if (waitingRegular[b].remove(p, removed)) {
+                    removed->setType(PatientType::Emergency);
+                    waitingEmergency[b].insertEnd(removed);
+                    escalatedCount++;
+                }
+                node = node->next;
+            }
+        }
         // 4. assign doctors to waiting patients
+        for (int b = 0; b < numBranches; b++) {
+
+            // Emergency first — prefer Senior, fall back to Junior
+            while (!waitingEmergency[b].isEmpty()) {
+                Doctor* doc = findDoctor(b, true);
+                if (doc == nullptr) break;
+
+                Patient* p = nullptr;
+                if (!waitingEmergency[b].removeHead(p)) break;
+
+                startVisit(p, doc, b);
+            }
+
+            // Then Regular — prefer Junior, fall back to Senior
+            while (!waitingRegular[b].isEmpty()) {
+                Doctor* doc = findDoctor(b, false);
+                if (doc == nullptr) break;
+
+                Patient* p = nullptr;
+                if (!waitingRegular[b].extractMax(p)) break;
+
+                startVisit(p, doc, b);
+            }
+        }
 
         currentTime++;
     }
@@ -60,6 +137,7 @@ void Clinic::handleCheckIn(Patient* p) {
     if (p->getType() == PatientType::Emergency) {
         waitingEmergency[brIdx].insertEnd(p);
     } else {
+        totalRegularPatients++;
         double prio = calculatePriority(p->getCheckInTime(), currentTime, p->getNumTests());
         waitingRegular[brIdx].insert(p, prio);
     }
@@ -68,15 +146,29 @@ void Clinic::handleCheckIn(Patient* p) {
 void Clinic::handleLeave(int patientId) {
     Patient* p = patientLookup.get(patientId);
     if (!p) return;
-    if (p->getType() != PatientType::Regular || p->getStatus() != PatientStatus::Waiting) return;
+    if (p->getStatus() != PatientStatus::Waiting) return;
 
     int brIdx = p->getBranch() - 1;
     if (brIdx < 0 || brIdx >= numBranches) return;
 
-    Patient* removed = nullptr;
-    if (waitingRegular[brIdx].remove(p, removed)) {
-        patientLookup.remove(patientId);
-        delete removed;
+    if (p->getType() == PatientType::Emergency) {
+        auto* node = waitingEmergency[brIdx].getHead();
+        while (node != nullptr) {
+            if (node->data == p) {
+                waitingEmergency[brIdx].removeNode(node);
+                patientLookup.remove(patientId);
+                delete p;
+                return;
+            }
+            node = node->next;
+        }
+    }
+    else {
+        Patient* removed = nullptr;
+        if (waitingRegular[brIdx].remove(p, removed)) {
+            patientLookup.remove(patientId);
+            delete removed;
+        }
     }
 }
 
@@ -111,4 +203,33 @@ bool Clinic::anyPatientsInVisit() const {
         if (!inVisit[i].isEmpty()) return true;
     }
     return false;
+}
+Doctor* Clinic::findDoctor(int branchIdx, bool preferSenior) {
+    Doctor* docs = branches[branchIdx].getDoc();
+    int n = branches[branchIdx].getDocCnt();
+
+    DoctorLvl first = preferSenior ? DoctorLvl::Senior : DoctorLvl::Junior;
+    DoctorLvl second = preferSenior ? DoctorLvl::Junior : DoctorLvl::Senior;
+
+    for (int d = 0; d < n; d++) {
+        if (docs[d].IsAvlbl(currentTime) && docs[d].getLvl() == first) return &docs[d];
+    }
+    for (int d = 0; d < n; d++) {
+        if (docs[d].IsAvlbl(currentTime) && docs[d].getLvl() == second) return &docs[d];
+    }
+    return nullptr;
+}
+void Clinic::startVisit(Patient* p, Doctor* doc, int branchIdx) {
+    int perTest = (doc->getLvl() == DoctorLvl::Senior)
+        ? seniorPerTestDuration
+        : juniorPerTestDuration;
+
+    int visitTime = setupDuration + wrapupDuration + (p->getNumTests() * perTest);
+
+    p->setWT(currentTime - p->getCheckInTime());
+    p->setVT(visitTime);
+    p->setStatus(PatientStatus::InTest);
+
+    doc->assignPatient(p, currentTime + visitTime);
+    inVisit[branchIdx].insertEnd(p);
 }

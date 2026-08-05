@@ -7,6 +7,7 @@
 class Branch;
 class Event;
 class Patient;
+class Doctor;
 
 class Clinic {
 public:
@@ -17,7 +18,8 @@ public:
         currentTime(0),
         setupDuration(0), wrapupDuration(0),
         seniorPerTestDuration(0), juniorPerTestDuration(0),
-        autoEscalationLimit(0)
+        autoEscalationLimit(0),
+        totalRegularPatients(0), escalatedCount(0)
     {
     }
     ~Clinic();
@@ -37,6 +39,11 @@ public:
     static const int WAIT_WEIGHT = 2;
     static const int TEST_WEIGHT = 1;
     static double calculatePriority(int checkInTime, int currentTime, int numTests);
+    DoublyLinkedList<Patient*>& getDonePatients() { return donePatients; }
+    Branch* getBranches() { return branches; }
+    int getNumBranches() const { return numBranches; }
+    int getTotalRegular() const { return totalRegularPatients; }
+    int getEscalatedCount() const { return escalatedCount; }
 
 private:
     
@@ -54,6 +61,10 @@ private:
     int seniorPerTestDuration;
     int juniorPerTestDuration;
     int autoEscalationLimit;
+    int totalRegularPatients;
+    int escalatedCount;
     bool anyPatientsWaiting() const;
     bool anyPatientsInVisit() const;
+    Doctor* findDoctor(int branchIdx, bool preferSenior);
+    void startVisit(Patient* p, Doctor* doc, int branchIdx);
 };
