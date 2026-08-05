@@ -49,8 +49,7 @@ void Clinic::run() {
                     Patient* p = doc.getCurrentPatient();
                     if (p) {
                         p->markDone(currentTime);
-                        p->markDone(currentTime);
-
+                        
                         auto* node = inVisit[b].getHead();
                         while (node != nullptr) {
                             if (node->data == p) {
