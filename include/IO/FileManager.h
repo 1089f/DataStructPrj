@@ -1,3 +1,10 @@
+// NOTE (Member 4 / Hassan):
+// KNOWN BUG: WriteOutput() takes totalRegular and escalatedCount but never
+// passes them to stats.writeStats(), so "Auto-escalated" always prints 0.
+// Clinic computes both correctly (verified: 3 escalated / 5 regular on an
+// AutoE=8 run). Needs fixing in Statistics::writeStats().
+//
+// LoadData() calls into Clinic via loadUtilities(), setBranches(), addEvent().
 #pragma once
 #include <string>
 #include "../DataStructures/LinkedList.h"

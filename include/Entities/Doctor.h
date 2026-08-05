@@ -1,3 +1,10 @@
+// NOTE (Member 4 / Hassan):
+// The Scheduler queries these every tick - please don't remove or rename:
+//   getAvlbl(), getBusyUntil(), getBreakEndsAt(), getCurrentPatient()
+//   assignPatient(p, finishTime), finishVisit(currentTime), endBreak()
+//   DoctorAvlbl::Busy
+// finishVisit() replaced PatientSeen() - it also records when the break
+// ends, which PatientSeen() never did (so doctors never came back).
 #pragma once
 
 enum class DoctorLvl { Senior, Junior };

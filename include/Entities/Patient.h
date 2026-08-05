@@ -1,3 +1,7 @@
+// NOTE (Member 4 / Hassan):
+// Scheduler uses: getId(), getCheckInTime(), getNumTests(), getBranch(),
+// getType(), getStatus(), setType(), setWT(), setVT(), setFT(), setStatus().
+// heapIndex is managed by PriorityQueue only - don't touch it elsewhere.
 #pragma once
 #include <string>
 
