@@ -97,6 +97,24 @@ void Clinic::run() {
                 node = node->next;
             }
         }
+        // recompute priorities so wait time affects ordering as time advances
+for (int b = 0; b < numBranches; b++) {
+    int n = waitingRegular[b].size();
+    if (n == 0) continue;
+
+    // pull everyone out, then reinsert with fresh scores
+    Patient** tmp = new Patient*[n];
+    int cnt = 0;
+    Patient* p = nullptr;
+    while (waitingRegular[b].extractMax(p)) {
+        tmp[cnt++] = p;
+    }
+    for (int i = 0; i < cnt; i++) {
+        double prio = calculatePriority(tmp[i]->getCheckInTime(), currentTime, tmp[i]->getNumTests());
+        waitingRegular[b].insert(tmp[i], prio);
+    }
+    delete[] tmp;
+}
         // 4. assign doctors to waiting patients
         for (int b = 0; b < numBranches; b++) {
 
@@ -187,8 +205,7 @@ void Clinic::handleEscalate(int patientId) {
     }
 }
 double Clinic::calculatePriority(int checkInTime, int currentTime, int numTests) {
-    int waitTime = currentTime - checkInTime;
-    return (WAIT_WEIGHT * waitTime) - (TEST_WEIGHT * numTests);
+    return -(WAIT_WEIGHT * checkInTime) - (TEST_WEIGHT * numTests);
 }
 bool Clinic::anyPatientsWaiting() const {
     for (int i = 0; i < numBranches; i++) {
@@ -220,6 +237,9 @@ Doctor* Clinic::findDoctor(int branchIdx, bool preferSenior) {
     return nullptr;
 }
 void Clinic::startVisit(Patient* p, Doctor* doc, int branchIdx) {
+    std::cout << "t=" << currentTime << " assigning P" << p->getId()
+        << " type=" << (p->getType() == PatientType::Emergency ? "E" : "R")
+        << "\n";
     int perTest = (doc->getLvl() == DoctorLvl::Senior)
         ? seniorPerTestDuration
         : juniorPerTestDuration;
