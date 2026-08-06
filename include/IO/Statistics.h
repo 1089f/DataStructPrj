@@ -18,7 +18,7 @@ public:
 
     void record(Patient* p);
     void recordEscalation();
-    void writeStats(std::ofstream& out, Branch* branches, int branchCount);
+    void writeStats(std::ofstream& out, Branch* branches, int branchCount, int totalRegular);
 
     int getTotalPatients() const;
     int getEscalatedCount() const;
