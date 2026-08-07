@@ -65,4 +65,30 @@ public:
         val = frontPtr->data;
         return true;
     }
+
+    // Non-destructive traversal hook (read-only iteration)
+    template <typename Func>
+    void traverse(Func visit) const {
+        Node* current = frontPtr;
+        while (current != nullptr) {
+            visit(current->data);
+            current = current->next;
+        }
+    }
+
+    // Non-destructive print hook
+    void print(std::ostream& os = std::cout, void (*printItem)(const T&) = nullptr) const {
+        Node* current = frontPtr;
+        bool first = true;
+        while (current != nullptr) {
+            if (!first) os << ", ";
+            if (printItem != nullptr) {
+                printItem(current->data);
+            } else {
+                os << current->data;
+            }
+            first = false;
+            current = current->next;
+        }
+    }
 };

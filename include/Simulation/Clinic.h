@@ -9,6 +9,8 @@ class Event;
 class Patient;
 class Doctor;
 
+enum class SimulationMode { Interactive, Silent };
+
 class Clinic {
 public:
     
@@ -19,7 +21,8 @@ public:
         setupDuration(0), wrapupDuration(0),
         seniorPerTestDuration(0), juniorPerTestDuration(0),
         autoEscalationLimit(0),
-        totalRegularPatients(0), escalatedCount(0)
+        totalRegularPatients(0), escalatedCount(0),
+        mode(SimulationMode::Silent)
     {
     }
     ~Clinic();
@@ -35,6 +38,11 @@ public:
     void handleCheckIn(Patient* p);
     void handleLeave(int patientId);
     void handleEscalate(int patientId);
+
+    void setMode(SimulationMode m) { mode = m; }
+    SimulationMode getMode() const { return mode; }
+    void promptModeSelection();
+    void printSnapshot() const;
 
     static const int WAIT_WEIGHT = 2;
     static const int TEST_WEIGHT = 1;
@@ -71,6 +79,7 @@ private:
     int autoEscalationLimit;
     int totalRegularPatients;
     int escalatedCount;
+    SimulationMode mode;
     bool anyPatientsWaiting() const;
     bool anyPatientsInVisit() const;
     Doctor* findDoctor(int branchIdx, bool preferSenior);

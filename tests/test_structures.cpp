@@ -254,6 +254,79 @@ void testCrossStructureMove() {
     std::cout << "  -> Cross-structure pointer move test PASSED successfully.\n";
 }
 
+void testNonDestructivePrintHooks() {
+    std::cout << "[TEST] Running Non-Destructive Print & Traversal Hooks Test...\n";
+
+    // 1. Queue Traversal & Print Test
+    Queue<int> q;
+    q.enqueue(10);
+    q.enqueue(20);
+    q.enqueue(30);
+    assert(q.size() == 3);
+
+    int sumQ = 0;
+    q.traverse([&sumQ](const int& val) { sumQ += val; });
+    assert(sumQ == 60);
+    assert(q.size() == 3); // Encapsulation & size preserved
+
+    // 2. DoublyLinkedList Traversal & Print Test
+    DoublyLinkedList<int> dll;
+    dll.insertEnd(100);
+    dll.insertEnd(200);
+    dll.insertEnd(300);
+    assert(dll.size() == 3);
+
+    int sumDLL = 0;
+    dll.traverse([&sumDLL](const int& val) { sumDLL += val; });
+    assert(sumDLL == 600);
+    assert(dll.size() == 3);
+
+    // 3. PriorityQueue Direct Heap Array Traversal & Print Test
+    PriorityQueue<Patient*> pq;
+    Patient* p1 = new Patient(10, 1, PatientType::Regular, 2, 1);
+    Patient* p2 = new Patient(20, 2, PatientType::Regular, 4, 1);
+    Patient* p3 = new Patient(30, 3, PatientType::Regular, 1, 1);
+
+    pq.insert(p1, 50.0);
+    pq.insert(p2, 90.0); // max priority -> root
+    pq.insert(p3, 30.0);
+
+    assert(pq.size() == 3);
+    assert(p2->getHeapIndex() == 0); // Root must be p2
+
+    // Traversal iterates heap[0..count-1] directly without extraction or heap modification
+    int visitedCount = 0;
+    pq.traverse([&visitedCount](Patient* const & p) {
+        assert(p != nullptr);
+        visitedCount++;
+    });
+    assert(visitedCount == 3);
+    assert(pq.size() == 3);            // Size remains 3
+    assert(p2->getHeapIndex() == 0);   // Heap indices untouched!
+
+    // Peek max must still return p2
+    Patient* top = nullptr;
+    assert(pq.peekMax(top) && top == p2);
+
+    delete p1;
+    delete p2;
+    delete p3;
+
+    // 4. LookupTable Traversal & Print Test
+    LookupTable<int*> table;
+    int a = 5, b = 15;
+    table.insert(1, &a);
+    table.insert(2, &b);
+    assert(table.size() == 2);
+
+    int tableSum = 0;
+    table.traverse([&tableSum](int* val) { tableSum += *val; });
+    assert(tableSum == 20);
+    assert(table.size() == 2);
+
+    std::cout << "  -> Non-Destructive Print & Traversal hooks PASSED successfully.\n";
+}
+
 int main() {
     std::cout << "==================================================\n";
     std::cout << "  CIE205 Checkpoint 2 - Data Structures Test Suite\n";
@@ -264,6 +337,7 @@ int main() {
     testPriorityQueue();
     testLookupTable();
     testCrossStructureMove();
+    testNonDestructivePrintHooks();
 
     std::cout << "==================================================\n";
     std::cout << "  ALL DATA STRUCTURE TESTS PASSED! ZERO ERRORS.\n";

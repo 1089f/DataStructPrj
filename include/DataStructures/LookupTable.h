@@ -73,4 +73,30 @@ public:
         }
         count = 0;
     }
+
+    // Non-destructive traversal hook (read-only iteration over populated slots)
+    template <typename Func>
+    void traverse(Func visit) const {
+        for (int i = 0; i < capacity; i++) {
+            if (table[i] != nullptr) {
+                visit(table[i]);
+            }
+        }
+    }
+
+    // Non-destructive print hook
+    void print(std::ostream& os = std::cout, void (*printItem)(const T&) = nullptr) const {
+        bool first = true;
+        for (int i = 0; i < capacity; i++) {
+            if (table[i] != nullptr) {
+                if (!first) os << ", ";
+                if (printItem != nullptr) {
+                    printItem(table[i]);
+                } else {
+                    os << table[i];
+                }
+                first = false;
+            }
+        }
+    }
 };

@@ -17,11 +17,15 @@ int main() {
 
     cout << "LoadData OK - CP1 build passes.\n";
 
+<<<<<<< Updated upstream
     GUIRenderer gui(clinic);
     gui.Init();
     gui.Run();
     gui.Shutdown();
 
+=======
+    clinic.promptModeSelection();
+>>>>>>> Stashed changes
     clinic.run();
 
     cout << "Done patients: " << clinic.getDonePatients().size() << "\n";

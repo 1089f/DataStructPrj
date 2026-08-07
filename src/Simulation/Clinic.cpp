@@ -146,8 +146,137 @@ bool Clinic::stepOnce() {
     currentTime++;
     return true; //t7esaha recursion mst5abeya
 }
+<<<<<<< Updated upstream
 void Clinic::run() {
     while (stepOnce()) {}
+=======
+        // 4. assign doctors to waiting patients
+        for (int b = 0; b < numBranches; b++) {
+
+            // Emergency first   prefer Senior, fall back to Junior
+            while (!waitingEmergency[b].isEmpty()) {
+                Doctor* doc = findDoctor(b, true);
+                if (doc == nullptr) break;
+
+                Patient* p = nullptr;
+                if (!waitingEmergency[b].removeHead(p)) break;
+
+                startVisit(p, doc, b);
+            }
+
+            // Then Regular   prefer Junior, fall back to Senior
+            while (!waitingRegular[b].isEmpty()) {
+                Doctor* doc = findDoctor(b, false);
+                if (doc == nullptr) break;
+
+                Patient* p = nullptr;
+                if (!waitingRegular[b].extractMax(p)) break;
+
+                startVisit(p, doc, b);
+            }
+        }
+
+        if (mode == SimulationMode::Interactive) {
+            printSnapshot();
+            std::cout << "\n[Press Enter to continue to next timestep...]";
+            std::cin.get();
+        }
+
+        currentTime++;
+    }
+>>>>>>> Stashed changes
+}
+
+void Clinic::promptModeSelection() {
+    std::cout << "============================================================\n";
+    std::cout << "  Select Simulation Mode:\n";
+    std::cout << "  1 - Silent Mode (Fast execution, no timestep output)\n";
+    std::cout << "  2 - Interactive Mode (Step-by-step console visualization)\n";
+    std::cout << "============================================================\n";
+    std::cout << "Enter choice (1 or 2): ";
+    int choice = 1;
+    if (std::cin >> choice) {
+        if (choice == 2) {
+            mode = SimulationMode::Interactive;
+            std::cout << "\nInteractive Mode selected. Starting simulation...\n";
+            std::cin.ignore(10000, '\n');
+        } else {
+            mode = SimulationMode::Silent;
+            std::cout << "\nSilent Mode selected.\n";
+        }
+    } else {
+        std::cin.clear();
+        std::cin.ignore(10000, '\n');
+        mode = SimulationMode::Silent;
+        std::cout << "\nInvalid input. Defaulting to Silent Mode.\n";
+    }
+}
+
+static void printPatientHelper(Patient* const & p) {
+    if (p) std::cout << "P" << p->getId();
+    else std::cout << "null";
+}
+
+void Clinic::printSnapshot() const {
+    std::cout << "\n============================================================\n";
+    std::cout << "  Current Timestep: " << currentTime << "\n";
+    std::cout << "============================================================\n";
+
+    for (int b = 0; b < numBranches; b++) {
+        std::cout << "Branch " << (b + 1) << ":\n";
+
+        // 1. Doctor statuses
+        std::cout << "  Doctors: ";
+        Doctor* docs = branches[b].getDoc();
+        int docCnt = branches[b].getDocCnt();
+        if (docCnt == 0) {
+            std::cout << "None";
+        } else {
+            for (int d = 0; d < docCnt; d++) {
+                if (d > 0) std::cout << " | ";
+                Doctor& doc = docs[d];
+                std::cout << "D" << (d + 1) << " (" << (doc.getLvl() == DoctorLvl::Senior ? "Senior" : "Junior") << "): ";
+                switch (doc.getAvlbl()) {
+                case DoctorAvlbl::Available:
+                    std::cout << "free";
+                    break;
+                case DoctorAvlbl::Busy:
+                    std::cout << "busy-until-t=" << doc.getBusyUntil();
+                    if (doc.getCurrentPatient()) {
+                        std::cout << " [P" << doc.getCurrentPatient()->getId() << "]";
+                    }
+                    break;
+                case DoctorAvlbl::OnBreak:
+                    std::cout << "on-break-until-t=" << doc.getBreakEndsAt();
+                    break;
+                case DoctorAvlbl::OffShift:
+                    std::cout << "shift-not-started";
+                    break;
+                }
+            }
+        }
+        std::cout << "\n";
+
+        // 2. Waiting Emergency (printed using non-destructive print hook)
+        std::cout << "  Waiting Emergency (service order): [ ";
+        waitingEmergency[b].print(std::cout, printPatientHelper);
+        std::cout << " ]\n";
+
+        // 3. Waiting Regular (printed using non-destructive print hook - direct heap iteration)
+        std::cout << "  Waiting Regular (priority order):  [ ";
+        waitingRegular[b].print(std::cout, printPatientHelper);
+        std::cout << " ]\n";
+
+        // 4. In-Visit list (printed using non-destructive print hook)
+        std::cout << "  In-Visit list:                     [ ";
+        inVisit[b].print(std::cout, printPatientHelper);
+        std::cout << " ]\n";
+
+        std::cout << "\n";
+    }
+
+    std::cout << "Done patients count: " << donePatients.size() << "\n";
+    std::cout << "============================================================\n";
 }
 
 void Clinic::handleCheckIn(Patient* p) {

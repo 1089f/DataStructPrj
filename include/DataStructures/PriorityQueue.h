@@ -216,4 +216,27 @@ public:
             siftDown(i);
         }
     }
+
+    // Non-destructive traversal hook: iterates heap[0..count-1] directly for display purposes only.
+    // Does NOT reorder or extract elements while traversing.
+    template <typename Func>
+    void traverse(Func visit) const {
+        for (int i = 0; i < count; i++) {
+            visit(heap[i].data);
+        }
+    }
+
+    // Non-destructive print hook: prints heap[0..count-1] directly without modifying heap
+    void print(std::ostream& os = std::cout, void (*printItem)(const T&) = nullptr) const {
+        bool first = true;
+        for (int i = 0; i < count; i++) {
+            if (!first) os << ", ";
+            if (printItem != nullptr) {
+                printItem(heap[i].data);
+            } else {
+                os << heap[i].data;
+            }
+            first = false;
+        }
+    }
 };
