@@ -8,6 +8,10 @@ Clinic::~Clinic() {
     delete[] waitingEmergency;
     delete[] waitingRegular;
     delete[] inVisit;
+    if (distanceTable) {
+        for (int i = 0; i < numBranches; i++) delete[] distanceTable[i];
+        delete[] distanceTable;
+    }
 }
 void Clinic::loadUtilities(int setup, int wrapup, int seniorPerTest,
     int juniorPerTest, int autoE) {
@@ -25,6 +29,10 @@ void Clinic::setBranches(Branch* branchArray, int count) {
     waitingEmergency = new DoublyLinkedList<Patient*>[count];
     waitingRegular = new PriorityQueue<Patient*>[count];
     inVisit = new DoublyLinkedList<Patient*>[count];
+}
+void Clinic::setDistanceTable(int** table, int count) {
+    distanceTable = table;
+    transferMode = (table != nullptr && count == numBranches);
 }
 
 void Clinic::addEvent(Event* e) {
@@ -140,6 +148,59 @@ bool Clinic::stepOnce() {
             if (!waitingRegular[b].extractMax(p)) break;
 
             startVisit(p, doc, b);
+        }
+    }
+    // 5. transfer whoever's still waiting past the threshold
+    if (transferMode) {
+        int threshold = autoEscalationLimit + TRANSFER_MARGIN;
+
+        for (int b = 0; b < numBranches; b++) {
+            // Emergency first
+            DoublyLinkedList<Patient*> toTransfer;
+            auto* node = waitingEmergency[b].getHead();
+            while (node != nullptr) {
+                Patient* p = node->data;
+                if (currentTime - p->getCheckInTime() > threshold) {
+                    toTransfer.insertEnd(p);
+                }
+                node = node->next;
+            }
+
+            auto* tn = toTransfer.getHead();
+            while (tn != nullptr) {
+                Patient* p = tn->data;
+                // find and unlink from this branch's emergency list
+                auto* en = waitingEmergency[b].getHead();
+                while (en != nullptr) {
+                    if (en->data == p) {
+                        if (tryTransfer(p, b)) waitingEmergency[b].removeNode(en);
+                        break;
+                    }
+                    en = en->next;
+                }
+                tn = tn->next;
+            }
+
+            // then Regular
+            DoublyLinkedList<Patient*> regTransfer;
+            for (int i = 0; i < waitingRegular[b].size(); i++) {
+                Patient* p = nullptr;
+                if (waitingRegular[b].getAt(i, p) && p != nullptr) {
+                    if (currentTime - p->getCheckInTime() > threshold) {
+                        regTransfer.insertEnd(p);
+                    }
+                }
+            }
+
+            auto* rn = regTransfer.getHead();
+            while (rn != nullptr) {
+                Patient* p = rn->data;
+                Patient* removed = nullptr;
+                if (tryTransfer(p, b)) {
+                    waitingRegular[b].remove(p, removed);
+                }
+                rn = rn->next;
+            }
         }
     }
 
@@ -384,4 +445,48 @@ void Clinic::startVisit(Patient* p, Doctor* doc, int branchIdx) {
 
     doc->assignPatient(p, currentTime + visitTime);
     inVisit[branchIdx].insertEnd(p);
+}
+int Clinic::findNearestBranch(int fromBranch, bool preferSenior) {
+    if (!transferMode || distanceTable == nullptr) return -1;
+
+    int best = -1;
+    int bestDist = -1;
+
+    for (int b = 0; b < numBranches; b++) {
+        if (b == fromBranch) continue;
+        if (findDoctor(b, preferSenior) == nullptr) continue;
+
+        int d = distanceTable[fromBranch][b];
+        if (best == -1 || d < bestDist) {
+            best = b;
+            bestDist = d;
+        }
+    }
+    return best;
+}
+bool Clinic::tryTransfer(Patient* p, int fromBranch) {
+    bool preferSenior = (p->getType() == PatientType::Emergency);
+
+    int toBranch = findNearestBranch(fromBranch, preferSenior);
+    if (toBranch == -1) return false;
+
+    Doctor* doc = findDoctor(toBranch, preferSenior);
+    if (doc == nullptr) return false;
+
+    int travel = distanceTable[fromBranch][toBranch];
+
+    int perTest = (doc->getLvl() == DoctorLvl::Senior)
+        ? seniorPerTestDuration
+        : juniorPerTestDuration;
+    int visitTime = setupDuration + wrapupDuration + (p->getNumTests() * perTest);
+
+    p->setWT(currentTime - p->getCheckInTime() + travel);
+    p->setVT(visitTime);
+    p->markInVisit();
+
+    doc->assignPatient(p, currentTime + travel + visitTime);
+    inVisit[toBranch].insertEnd(p);
+
+    transferredCount++;
+    return true;
 }
