@@ -66,6 +66,34 @@ bool FileManager::LoadData(const std::string& filepath, Clinic& clinic) {
         }
     }
 
+    // Read optional distance table appended at end of file (B x B matrix)
+    if (B > 0) {
+        int** table = new int*[B];
+        for (int i = 0; i < B; i++) {
+            table[i] = new int[B];
+        }
+
+        bool hasTable = true;
+        for (int i = 0; i < B; i++) {
+            for (int j = 0; j < B; j++) {
+                if (!(in >> table[i][j])) {
+                    hasTable = false;
+                    break;
+                }
+            }
+            if (!hasTable) break;
+        }
+
+        if (hasTable) {
+            clinic.setDistanceTable(table, B);
+        } else {
+            for (int i = 0; i < B; i++) {
+                delete[] table[i];
+            }
+            delete[] table;
+        }
+    }
+
     in.close();
     return true;
 }

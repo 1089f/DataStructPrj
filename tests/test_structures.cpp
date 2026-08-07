@@ -327,6 +327,24 @@ void testNonDestructivePrintHooks() {
     std::cout << "  -> Non-Destructive Print & Traversal hooks PASSED successfully.\n";
 }
 
+void testSmartTransferDistanceTable() {
+    std::cout << "[TEST] Running Smart Transfer Distance Table Loading Test...\n";
+
+    // 1. Direct setter check
+    Clinic c1;
+    c1.setBranches(nullptr, 2);
+    int** dist = new int*[2];
+    dist[0] = new int[2]{ 0, 15 };
+    dist[1] = new int[2]{ 15, 0 };
+
+    c1.setDistanceTable(dist, 2);
+    assert(c1.getDistance(1, 2) == 15);
+    assert(c1.getDistance(2, 1) == 15);
+    assert(c1.getDistance(1, 1) == 0);
+
+    std::cout << "  -> Smart Transfer Distance Table tests PASSED successfully.\n";
+}
+
 int main() {
     std::cout << "==================================================\n";
     std::cout << "  CIE205 Checkpoint 2 - Data Structures Test Suite\n";
@@ -338,6 +356,7 @@ int main() {
     testLookupTable();
     testCrossStructureMove();
     testNonDestructivePrintHooks();
+    testSmartTransferDistanceTable();
 
     std::cout << "==================================================\n";
     std::cout << "  ALL DATA STRUCTURE TESTS PASSED! ZERO ERRORS.\n";

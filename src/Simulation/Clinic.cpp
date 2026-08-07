@@ -31,6 +31,12 @@ void Clinic::setBranches(Branch* branchArray, int count) {
     inVisit = new DoublyLinkedList<Patient*>[count];
 }
 void Clinic::setDistanceTable(int** table, int count) {
+    if (distanceTable != nullptr && distanceTable != table) {
+        for (int i = 0; i < numBranches; i++) {
+            delete[] distanceTable[i];
+        }
+        delete[] distanceTable;
+    }
     distanceTable = table;
     transferMode = (table != nullptr && count == numBranches);
 }
