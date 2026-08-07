@@ -15,12 +15,16 @@ int main() {
         return 1;
     }
 
-    cout << "LoadData OK - CP1 build passes.\n";
-
     GUIRenderer gui(clinic);
     gui.Init();
     gui.Run();
     gui.Shutdown();
+
+    clinic.run();
+
+    fm.WriteOutput("output.txt", clinic.getDonePatients(),
+        clinic.getBranches(), clinic.getNumBranches(),
+        clinic.getTotalRegular(), clinic.getEscalatedCount());
 
     return 0;
 }
