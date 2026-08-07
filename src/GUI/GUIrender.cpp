@@ -4,6 +4,7 @@
 #include "../../include/Entities/Patient.h"
 #include <raylib.h>
 
+
 GUIRenderer::GUIRenderer(Clinic& c)
     : clinic(c), paused(true), speedLvl(1), fTimer(0.0f), simFinished(false) {}
 
@@ -56,13 +57,13 @@ void GUIRenderer::DrawLegend(int y) {
     DrawRectangle(340, y, 18, 18, RED);
     DrawText("Off Shift", 362, y + 1, 14, BLACK);
 
-    DrawRectangle(470, y, 18, 18, (Color){ 220, 50, 50, 255 });
+    DrawRectangle(470, y, 18, 18, Color{ 220, 50, 50, 255 });
     DrawText("Emergency", 492, y + 1, 14, BLACK);
 
-    DrawRectangle(610, y, 18, 18, (Color){ 65, 120, 210, 255 });
+    DrawRectangle(610, y, 18, 18, Color{ 65, 120, 210, 255 });
     DrawText("Regular", 632, y + 1, 14, BLACK);
 
-    DrawRectangle(720, y, 18, 18, (Color){ 140, 50, 190, 255 });
+    DrawRectangle(720, y, 18, 18, Color{ 140, 50, 190, 255 });
     DrawText("In-Visit", 742, y + 1, 14, BLACK);
 }
 
@@ -102,9 +103,9 @@ void GUIRenderer::DrawStatsStrip(int x, int y) {
     int iv = getTotalInVisit();
     int dn = clinic.getDonePatients().size();
 
-    DrawText(TextFormat("Emg Waiting: %d", we),  x,       y, 17, (Color){ 200, 30, 30, 255 });
-    DrawText(TextFormat("Reg Waiting: %d", wr),  x + 175, y, 17, (Color){ 30, 90, 200, 255 });
-    DrawText(TextFormat("In-Visit: %d",   iv),   x + 355, y, 17, (Color){ 120, 40, 175, 255 });
+    DrawText(TextFormat("Emg Waiting: %d", we),  x,       y, 17, Color{ 200, 30, 30, 255 });
+    DrawText(TextFormat("Reg Waiting: %d", wr),  x + 175, y, 17, Color{ 30, 90, 200, 255 });
+    DrawText(TextFormat("In-Visit: %d",   iv),   x + 355, y, 17, Color{ 120, 40, 175, 255 });
     DrawText(TextFormat("Done: %d",       dn),   x + 490, y, 17, DARKGREEN);
 }
 
@@ -217,24 +218,34 @@ void GUIRenderer::DrawPlaybackControls(int y) {
         DrawText("Running...", 416, y + 9, 16, DARKBLUE);
 }
 
-void GUIRenderer::Init() {
+void GUIRenderer::Init()
+{
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+
     InitWindow(1280, 750, "Clinic Patient Scheduling - CIE205");
+
+    SetWindowPosition(50, 50);
+
+    SetWindowFocused();
+
     SetTargetFPS(60);
 }
 
 void GUIRenderer::Run() {
     while (!WindowShouldClose()) {
-        if (btnClicked(10, 682, 115, 34)) {
+        int controlY = GetScreenHeight() - 68;
+
+        if (btnClicked(10, controlY, 115, 34)) {
             paused = !paused;
             fTimer = 0.0f;
         }
-        if (btnClicked(136, 682, 82, 34) || IsKeyPressed(KEY_SPACE)) {
+        if (btnClicked(136, controlY, 82, 34) || IsKeyPressed(KEY_SPACE)){
             if (!simFinished)
                 simFinished = !clinic.stepOnce();
         }
-        if (btnClicked(228, 682, 34, 34) && speedLvl > 0)
+        if (btnClicked(228, controlY, 34, 34) && speedLvl > 0)
             speedLvl--;
-        if (btnClicked(364, 682, 34, 34) && speedLvl < 2)
+        if (btnClicked(364, controlY, 34, 34) && speedLvl < 2)
             speedLvl++;
 
         if (!paused && !simFinished) {
@@ -253,12 +264,12 @@ void GUIRenderer::Run() {
                  clinic.getCurrentTime()), 10, 8, 20, DARKBLUE);
         DrawStatsStrip(640, 10);
 
-        DrawLine(630, 45, 630, 670, (Color){ 180, 180, 180, 255 });
+        DrawLine(630, 45, 630, 670, Color{ 180, 180, 180, 255 });
 
         for (int b = 0; b < clinic.getNumBranches(); b++) {
             Branch* br = clinic.getBranches() + b;
             DrawText(TextFormat("Branch %d", b + 1), 10, 52 + b * 160, 16, DARKBLUE);
-            DrawLine(10, 70 + b * 160, 620, 70 + b * 160, (Color){ 200, 200, 200, 255 });
+            DrawLine(10, 70 + b * 160, 620, 70 + b * 160, Color{ 200, 200, 200, 255 });
             for (int d = 0; d < br->getDocCnt(); d++) {
                 int bx = 12 + d * 205;
                 int by = 75 + b * 160;
@@ -266,9 +277,11 @@ void GUIRenderer::Run() {
             }
         }
 
-        DrawWaitingQueues(642, 48, 620);
-        DrawPlaybackControls(682);
-        DrawLegend(724);
+        DrawWaitingQueues(642, 48, GetScreenHeight() - 120);
+        int h = GetScreenHeight();
+
+        DrawPlaybackControls(h - 68);
+        DrawLegend(h - 26);
 
         EndDrawing();
     }
