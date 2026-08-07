@@ -31,6 +31,7 @@
     <ClCompile Include="src\Entities\Patient.cpp" />
     <ClCompile Include="src\IO\FileManager.cpp" />
     <ClCompile Include="src\IO\Statistics.cpp" />
+    <ClCompile Include="src\GUI\GUIrender.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\IO\Statistics.h" />
@@ -53,5 +54,6 @@
     <ClInclude Include="include\Events\Leave.h" />
     <ClInclude Include="include\Events\Urgent.h" />
     <ClInclude Include="include\Events\Event.h" />
+    <ClInclude Include="include\GUI\GUIrender.h" />
   </ItemGroup>
 </Project>

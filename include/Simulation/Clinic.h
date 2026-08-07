@@ -44,7 +44,15 @@ public:
     int getNumBranches() const { return numBranches; }
     int getTotalRegular() const { return totalRegularPatients; }
     int getEscalatedCount() const { return escalatedCount; }
+    //Done by Omar :
+    // added some getters 2 be used in GUI w kda 
+    int getCurrentTime() const { return currentTime; }
+    const DoublyLinkedList<Patient*>* getWaitingEmergency() const { return waitingEmergency; }
+    const PriorityQueue<Patient*>* getWaitingRegular() const { return waitingRegular; }
+    const DoublyLinkedList<Patient*>* getInVisit() const { return inVisit; }
 
+    bool stepOnce(); //added by Omar 
+    // used to slow down the run so it can work fine with the GUI (tick by tick)
 private:
     
     Branch* branches;

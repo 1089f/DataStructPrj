@@ -1,10 +1,11 @@
 #include <iostream>
 #include "include/Simulation/Clinic.h"
 #include "include/IO/FileManager.h"
+#include "include/GUI/GUIrender.h"
 using namespace std;
 
 int main() {
-    std::string inputFile = "tests/sample_inputs/test10.txt";
+    std::string inputFile = "tests/sample_inputs/test4.txt";
 
     Clinic clinic;
     FileManager fm;
@@ -15,6 +16,11 @@ int main() {
     }
 
     cout << "LoadData OK - CP1 build passes.\n";
+
+    GUIRenderer gui(clinic);
+    gui.Init();
+    gui.Run();
+    gui.Shutdown();
 
     clinic.run();
 
