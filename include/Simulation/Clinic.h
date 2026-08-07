@@ -19,9 +19,11 @@ public:
         setupDuration(0), wrapupDuration(0),
         seniorPerTestDuration(0), juniorPerTestDuration(0),
         autoEscalationLimit(0),
-        totalRegularPatients(0), escalatedCount(0)
+        totalRegularPatients(0), escalatedCount(0),
+        distanceTable(nullptr), transferMode(false), transferredCount(0)
     {
     }
+    int getTransferredCount() const { return transferredCount; }
     ~Clinic();
     
     void loadUtilities(int setup, int wrapup, int seniorPerTest,
@@ -53,6 +55,8 @@ public:
 
     bool stepOnce(); //added by Omar 
     // used to slow down the run so it can work fine with the GUI (tick by tick)
+    void setDistanceTable(int** table, int count);
+    static const int TRANSFER_MARGIN = 5;
 private:
     
     Branch* branches;
@@ -75,4 +79,9 @@ private:
     bool anyPatientsInVisit() const;
     Doctor* findDoctor(int branchIdx, bool preferSenior);
     void startVisit(Patient* p, Doctor* doc, int branchIdx);
+    int** distanceTable;
+    bool transferMode;
+    int findNearestBranch(int fromBranch, bool preferSenior);
+    bool tryTransfer(Patient* p, int fromBranch);
+    int transferredCount;
 };

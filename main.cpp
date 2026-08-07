@@ -1,7 +1,9 @@
 #include <iostream>
 #include "include/Simulation/Clinic.h"
 #include "include/IO/FileManager.h"
+#ifdef USE_GUI
 #include "include/GUI/GUIrender.h"
+#endif
 using namespace std;
 
 int main() {
@@ -17,10 +19,12 @@ int main() {
 
     cout << "LoadData OK - CP1 build passes.\n";
 
+#ifdef USE_GUI
     GUIRenderer gui(clinic);
     gui.Init();
     gui.Run();
     gui.Shutdown();
+#endif
 
     clinic.run();
 
