@@ -207,45 +207,9 @@ bool Clinic::stepOnce() {
     currentTime++;
     return true; //t7esaha recursion mst5abeya
 }
-<<<<<<< Updated upstream
+
 void Clinic::run() {
     while (stepOnce()) {}
-=======
-        // 4. assign doctors to waiting patients
-        for (int b = 0; b < numBranches; b++) {
-
-            // Emergency first   prefer Senior, fall back to Junior
-            while (!waitingEmergency[b].isEmpty()) {
-                Doctor* doc = findDoctor(b, true);
-                if (doc == nullptr) break;
-
-                Patient* p = nullptr;
-                if (!waitingEmergency[b].removeHead(p)) break;
-
-                startVisit(p, doc, b);
-            }
-
-            // Then Regular   prefer Junior, fall back to Senior
-            while (!waitingRegular[b].isEmpty()) {
-                Doctor* doc = findDoctor(b, false);
-                if (doc == nullptr) break;
-
-                Patient* p = nullptr;
-                if (!waitingRegular[b].extractMax(p)) break;
-
-                startVisit(p, doc, b);
-            }
-        }
-
-        if (mode == SimulationMode::Interactive) {
-            printSnapshot();
-            std::cout << "\n[Press Enter to continue to next timestep...]";
-            std::cin.get();
-        }
-
-        currentTime++;
-    }
->>>>>>> Stashed changes
 }
 
 void Clinic::promptModeSelection() {
